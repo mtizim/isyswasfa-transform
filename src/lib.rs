@@ -538,7 +538,7 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
                 .push(
                     UnresolvedPackage::parse(
                         Path::new("isyswasfa.wit"),
-                        include_str!("../../wit/deps/isyswasfa/isyswasfa.wit"),
+                        include_str!("../wit/deps/isyswasfa/isyswasfa.wit"),
                     )
                     .unwrap(),
                 )
@@ -577,7 +577,7 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
                     .push(
                         UnresolvedPackage::parse(
                             Path::new("poll.wit"),
-                            include_str!("../../wit/deps/isyswasfa-io/poll.wit"),
+                            include_str!("../wit/deps/isyswasfa-io/poll.wit"),
                         )
                         .unwrap(),
                     )

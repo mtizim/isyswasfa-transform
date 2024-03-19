@@ -4,4 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wit-parser = "0.13.1"
+# TODO: switch to upstream release versions of these deps once
+# https://github.com/bytecodealliance/wasm-tools/pull/1459 is merged and
+# released:
+wit-parser = { git = "https://github.com/dicej/wasm-tools", branch = "adapt-world-imports" }
