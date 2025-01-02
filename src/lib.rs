@@ -2,8 +2,8 @@ use {
     std::{collections::HashMap, iter, path::Path},
     wit_parser::{
         Case, Docs, Field, Function, FunctionKind, Handle, InterfaceId, Record, Resolve, Result_,
-        Results, Stability, Tuple, Type, TypeDef, TypeDefKind, TypeId, TypeOwner,
-        UnresolvedPackage, Variant, WorldId, WorldItem, WorldKey,
+        Results, Tuple, Type, TypeDef, TypeDefKind, TypeId, TypeOwner, UnresolvedPackage, Variant,
+        WorldId, WorldItem, WorldKey,
     },
 };
 
@@ -27,7 +27,7 @@ impl<'a> Asyncify<'a> {
         world: WorldId,
     ) -> Vec<(WorldKey, WorldItem)> {
         match item {
-            WorldItem::Interface { id: old, .. } => {
+            WorldItem::Interface { 0: old, .. } => {
                 self.asyncify_interface(*old);
                 vec![(key.clone(), item.clone())]
             }
@@ -129,7 +129,6 @@ impl<'a> Asyncify<'a> {
                 }
             },
             docs: function.docs.clone(),
-            stability: Stability::Unknown,
         }
     }
 
@@ -163,7 +162,6 @@ impl<'a> Asyncify<'a> {
                             .collect(),
                         results: Results::Anon(Type::Id(self.map_result_type(return_ty))),
                         docs: function.docs.clone(),
-                        stability: Stability::Unknown,
                     },
                     Function {
                         name: format!(
@@ -182,7 +180,6 @@ impl<'a> Asyncify<'a> {
                             .map(Results::Anon)
                             .unwrap_or_else(|| Results::Named(Vec::new())),
                         docs: function.docs.clone(),
-                        stability: Stability::Unknown,
                     },
                 ))
             }
@@ -198,7 +195,6 @@ impl<'a> Asyncify<'a> {
                 kind: TypeDefKind::Option(ty),
                 owner: TypeOwner::None,
                 docs: Docs::default(),
-                stability: Stability::Unknown,
             });
 
             self.option_types.insert(ty, option_ty);
@@ -218,7 +214,6 @@ impl<'a> Asyncify<'a> {
                 }),
                 owner: TypeOwner::None,
                 docs: Docs::default(),
-                stability: Stability::Unknown,
             });
 
             self.result_types.insert(ty, result_ty);
@@ -313,7 +308,6 @@ impl<'a> Asyncify<'a> {
                                 kind: TypeDefKind::Resource,
                                 owner,
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             });
 
                             let sender_handle = self.new_resolve.types.alloc(TypeDef {
@@ -321,7 +315,6 @@ impl<'a> Asyncify<'a> {
                                 kind: TypeDefKind::Handle(Handle::Own(sender)),
                                 owner: TypeOwner::None,
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             });
 
                             let receiver_name = format!("isyswasfa-receiver-{element_name}");
@@ -330,7 +323,6 @@ impl<'a> Asyncify<'a> {
                                 kind: TypeDefKind::Resource,
                                 owner,
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             });
 
                             let receiver_handle = self.new_resolve.types.alloc(TypeDef {
@@ -338,7 +330,6 @@ impl<'a> Asyncify<'a> {
                                 kind: TypeDefKind::Handle(Handle::Own(receiver)),
                                 owner: TypeOwner::None,
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             });
 
                             let pipe_name = format!("isyswasfa-pipe-{element_name}");
@@ -357,11 +348,9 @@ impl<'a> Asyncify<'a> {
                                         }),
                                         owner: TypeOwner::None,
                                         docs: Docs::default(),
-                                        stability: Stability::Unknown,
                                     },
                                 ))),
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             };
 
                             let send_name = format!("[static]isyswasfa-sender-{element_name}.send");
@@ -373,7 +362,6 @@ impl<'a> Asyncify<'a> {
                                     .collect(),
                                 results: Results::Named(Vec::new()),
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             };
 
                             let option_ty = ty.map(|ty| Type::Id(self.map_option_type(ty)));
@@ -387,7 +375,6 @@ impl<'a> Asyncify<'a> {
                                 params: vec![("receiver".into(), Type::Id(receiver_handle))],
                                 results: Results::Anon(Type::Id(self.map_result_type(option_ty))),
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             };
 
                             let receive_result_name =
@@ -400,7 +387,6 @@ impl<'a> Asyncify<'a> {
                                     .map(Results::Anon)
                                     .unwrap_or_else(|| Results::Named(Vec::new())),
                                 docs: Docs::default(),
-                                stability: Stability::Unknown,
                             };
 
                             match owner {
@@ -458,7 +444,6 @@ impl<'a> Asyncify<'a> {
                         kind,
                         owner: def.owner,
                         docs: def.docs.clone(),
-                        stability: Stability::Unknown,
                     });
                     self.types.insert(id, new_id);
                     new_id
@@ -483,8 +468,8 @@ impl<'a> Asyncify<'a> {
                 Type::S16 => "s16".into(),
                 Type::S32 => "s32".into(),
                 Type::S64 => "s64".into(),
-                Type::F32 => "float32".into(),
-                Type::F64 => "float64".into(),
+                Type::Float32 => "float32".into(),
+                Type::Float64 => "float64".into(),
                 Type::Char => "char".into(),
                 Type::String => "string".into(),
                 Type::Id(id) => {
@@ -620,7 +605,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
             kind: TypeDefKind::Handle(Handle::Own(id)),
             owner: TypeOwner::None,
             docs: Docs::default(),
-            stability: Stability::Unknown,
         })
     });
 
@@ -630,7 +614,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
         kind: TypeDefKind::Handle(Handle::Own(pending)),
         owner: TypeOwner::None,
         docs: Docs::default(),
-        stability: Stability::Unknown,
     });
 
     let ready = new_resolve.interfaces[isyswasfa_interface].types["ready"];
@@ -639,7 +622,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
         kind: TypeDefKind::Handle(Handle::Own(ready)),
         owner: TypeOwner::None,
         docs: Docs::default(),
-        stability: Stability::Unknown,
     });
 
     let poll_function = poll_suffix.map(|poll_suffix| {
@@ -649,7 +631,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
             kind: TypeDefKind::List(Type::Id(poll_input)),
             owner: TypeOwner::None,
             docs: Docs::default(),
-            stability: Stability::Unknown,
         });
 
         let poll_output = new_resolve.interfaces[isyswasfa_interface].types["poll-output"];
@@ -658,7 +639,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
             kind: TypeDefKind::List(Type::Id(poll_output)),
             owner: TypeOwner::None,
             docs: Docs::default(),
-            stability: Stability::Unknown,
         });
 
         Function {
@@ -667,7 +647,6 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
             params: vec![("input".to_owned(), Type::Id(list_poll_input))],
             results: Results::Anon(Type::Id(list_poll_output)),
             docs: Docs::default(),
-            stability: Stability::Unknown,
         }
     });
 
@@ -685,10 +664,9 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
 
     let imports = iter::once((
         WorldKey::Interface(isyswasfa_interface),
-        WorldItem::Interface {
-            id: isyswasfa_interface,
-            stability: Stability::Unknown,
-        },
+        WorldItem::Interface (
+         isyswasfa_interface,
+        ),
     ))
     .chain(
         old_world
@@ -696,15 +674,7 @@ fn transform_new(resolve: &Resolve, world: WorldId, poll_suffix: Option<&str>) -
             .iter()
             .flat_map(|(key, item)| asyncify.asyncify_world_item(key, item, world)),
     )
-    .chain(poll_interface.map(|id| {
-        (
-            WorldKey::Interface(id),
-            WorldItem::Interface {
-                id,
-                stability: Stability::Unknown,
-            },
-        )
-    }))
+    .chain(poll_interface.map(|id| (WorldKey::Interface(id), WorldItem::Interface (id ))))
     .collect();
 
     let exports = old_world
